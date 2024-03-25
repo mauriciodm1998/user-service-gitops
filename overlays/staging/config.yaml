@@ -1,0 +1,9 @@
+customerServer:
+  port: 8085
+userServer:
+  port: 8084
+token:
+  key: "dnVJWGFPSzRPcEpXQTl5U1gxVVRwSVdzaFhQcFA2bmVHS0dBNzI0RmF1WQ=="
+port: 8083
+db:
+  connectionString: host=user-postgres.fiap.svc.cluster.local port=5432 dbname=fiap_tech_challenge user=postgres password=1234 sslmode=disable

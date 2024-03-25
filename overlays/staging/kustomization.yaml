@@ -1,0 +1,55 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../../base
+
+namespace: hackaton
+
+configMapGenerator:
+- files:
+  - config.yaml
+  name: configmap
+  behavior: merge
+
+patches: 
+- patch: |-
+    - op: replace
+      path: /spec/ports
+      value:
+        - targetPort: 8083
+          port: 8083
+          name: rest
+        - targetPort: 8084
+          port: 8084
+          name: user-grpc
+        - targetPort: 8085
+          port: 8085
+          name: customer-grpc
+  target:
+    kind: Service
+
+- patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/livenessProbe/httpGet/port
+      value: 8083
+    - op: add
+      path: /spec/template/spec/containers/0/ports
+      value:
+        - containerPort: 8083
+        - containerPort: 8085
+        - containerPort: 8084
+    - op: replace
+      path: /spec/template/spec/containers/0/readinessProbe/httpGet/port
+      value: 8083
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom
+      value:
+        - secretRef:
+            name: user-service-secret
+  target:
+    kind: Deployment
+
+images:
+- name: image
+  newName: docker.io/mauricio1998/user-service
